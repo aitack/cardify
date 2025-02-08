@@ -33,12 +33,12 @@ class BusinessCardQRCodeScreen extends StatelessWidget {
                 size: 180,
                 errorCorrectionLevel: QrErrorCorrectLevel.H,
                 eyeStyle: QrEyeStyle(
-                  eyeShape: QrEyeShape.circle, // 目の部分をドットに
-                  color: Colors.black,
+                  eyeShape: QrEyeShape.circle, // 目の部分を丸に
+                  color: Color.fromARGB(255, 251, 157, 171), // 目の色をインスタ風に変更
                 ),
                 dataModuleStyle: QrDataModuleStyle(
-                  dataModuleShape: QrDataModuleShape.circle, // QRのドットを丸に
-                  color: Colors.black,
+                  dataModuleShape: QrDataModuleShape.circle, // データモジュールの形を丸に
+                  color: Color.fromARGB(255, 251, 157, 171),
                 ),
               ),
             ),
@@ -49,11 +49,11 @@ class BusinessCardQRCodeScreen extends StatelessWidget {
   }
 }
 
-// 🔵 背景のドット模様（変更なし）
+// 🔵 背景のドット模様
 class DotPatternPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = Colors.purple.withOpacity(0.3);
+    final paint = Paint()..color = Color(0xFFE6A8D7);
     const double spacing = 18; // ドットの間隔
     const double radius = 3; // ドットのサイズ
 
