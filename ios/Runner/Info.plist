@@ -45,5 +45,7 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>名刺を画像として保存するためにフォトライブラリへのアクセスが必要です。</string>
 </dict>
 </plist>
