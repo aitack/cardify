@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../models/business_card.dart';
-import 'business_card_preview_screen.dart'; // 名刺プレビュー画面
 
 class CreateCardScreen extends StatefulWidget {
   @override
@@ -13,6 +12,9 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
   String _jobTitle = '';
   String _email = '';
   String _phone = '';
+
+  // カードのIDを管理するためのカウンタ
+  int _cardCount = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -70,20 +72,19 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
-                    // 名刺情報を作成して、次の画面に遷移
+
+                    // 新しいカードの作成とカードナンバーを管理
+                    _cardCount++;
                     final card = BusinessCard(
                       name: _name,
                       jobTitle: _jobTitle,
                       email: _email,
                       phone: _phone,
+                      number: _cardCount, // 連番のカード番号を使用
                     );
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            BusinessCardPreviewScreen(card: card),
-                      ),
-                    );
+
+                    // カード作成後、リスト画面に戻る
+                    Navigator.pop(context, card);
                   }
                 },
                 child: Text('Save Card'),
