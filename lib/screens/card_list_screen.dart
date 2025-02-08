@@ -11,17 +11,14 @@ class _CardListScreenState extends State<CardListScreen> {
   List<BusinessCard> _cards = []; // 名刺カードのリスト
 
   void _addCard(BusinessCard card) {
-    // カード番号をリスト内の最終番号から次の番号を設定
     int newCardNumber = _cards.isEmpty ? 1 : _cards.last.number + 1;
-
-    // 新しいカードをリストに追加
     setState(() {
       _cards.add(BusinessCard(
         name: card.name,
         jobTitle: card.jobTitle,
         email: card.email,
         phone: card.phone,
-        number: newCardNumber, // 自動でナンバーを設定
+        number: newCardNumber,
       ));
     });
   }
@@ -31,40 +28,55 @@ class _CardListScreenState extends State<CardListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Business Card List'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
-              // 新しいカード作成画面に遷移
-              Navigator.pushNamed(context, '/create-card').then((newCard) {
-                if (newCard != null) {
-                  _addCard(newCard as BusinessCard); // 新しいカードを追加
-                }
-              });
-            },
+        backgroundColor: Color(0xFF9C41A0), // 紫
+      ),
+      body: Container(
+        color: Colors.white, // シンプルな白背景
+        child: ListView.builder(
+          itemCount: _cards.length,
+          itemBuilder: (context, index) {
+            final card = _cards[index];
+            return ListTile(
+              title: Text(card.name),
+              subtitle: Text(card.jobTitle),
+              trailing: Text('#${card.number}'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BusinessCardPreviewScreen(card: card),
+                  ),
+                );
+              },
+            );
+          },
+        ),
+      ),
+      floatingActionButton: Container(
+        width: 70,
+        height: 70,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: LinearGradient(
+            colors: [Color(0xFFFF4C7E), Color(0xFF9C41A0)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-        ],
+        ),
+        child: FloatingActionButton(
+          onPressed: () {
+            Navigator.pushNamed(context, '/create-card').then((newCard) {
+              if (newCard != null) {
+                _addCard(newCard as BusinessCard);
+              }
+            });
+          },
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          child: Icon(Icons.add, color: Colors.white, size: 32),
+        ),
       ),
-      body: ListView.builder(
-        itemCount: _cards.length,
-        itemBuilder: (context, index) {
-          final card = _cards[index];
-          return ListTile(
-            title: Text(card.name),
-            subtitle: Text(card.jobTitle),
-            trailing: Text('#${card.number}'), // カードの番号を表示
-            onTap: () {
-              // プレビュー画面に遷移
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => BusinessCardPreviewScreen(card: card),
-                ),
-              );
-            },
-          );
-        },
-      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
