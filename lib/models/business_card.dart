@@ -1,15 +1,19 @@
 class BusinessCard {
-  final String name;
-  final String jobTitle;
+  final String nickname;
+  final String snsUsername; // InstagramなどのSNSユーザー名
+  final String githubUsername; // Githubのユーザー名
+  final String noteUsername; // Noteのユーザー名
   final String email;
-  final String phone;
-  final int number; // 追加：カードの番号
+  final String other;
+  final int number;
 
   BusinessCard({
-    required this.name,
-    required this.jobTitle,
+    required this.nickname,
+    required this.snsUsername,
+    required this.githubUsername,
+    required this.noteUsername,
     required this.email,
-    required this.phone,
-    required this.number, // 初期化
+    required this.other,
+    required this.number,
   });
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart'; // リンクを開くためのパッケージ
+import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // アイコンパッケージ
 import 'package:qr_flutter/qr_flutter.dart';
 import '../models/business_card.dart';
 
@@ -6,6 +8,15 @@ class BusinessCardPreviewScreen extends StatelessWidget {
   final BusinessCard card;
 
   BusinessCardPreviewScreen({required this.card});
+
+  // URLを開くためのヘルパーメソッド
+  Future<void> _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,9 +26,8 @@ class BusinessCardPreviewScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Container(
-            // 名刺風デザインのため縦長にし、角を丸めてシャドウを追加
-            width: MediaQuery.of(context).size.width * 0.8, // スマホ画面の80%の幅
-            height: MediaQuery.of(context).size.height * 0.6, // スマホ画面の60%の高さ
+            width: MediaQuery.of(context).size.width * 0.8,
+            height: MediaQuery.of(context).size.height * 0.6,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
@@ -25,18 +35,17 @@ class BusinessCardPreviewScreen extends StatelessWidget {
                 BoxShadow(
                   color: Colors.black.withOpacity(0.1),
                   blurRadius: 10,
-                  offset: Offset(0, 5), // シャドウの位置
+                  offset: Offset(0, 5),
                 ),
               ],
             ),
             child: Stack(
               children: [
-                // 上部にナンバー表示
                 Positioned(
-                  top: 16, // 上から16ピクセルの位置に配置
-                  left: 16, // 左から16ピクセルの位置に配置
+                  top: 16,
+                  left: 16,
                   child: Text(
-                    'Card #${card.number}', // カード番号を表示
+                    'Card #${card.number}',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -44,51 +53,130 @@ class BusinessCardPreviewScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                // QRコードの右下配置
+                // QRコードの表示
                 Positioned(
-                  bottom: 16, // 下から16ピクセルの位置に配置
-                  right: 16, // 右から16ピクセルの位置に配置
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white, // QRコードの背景を白に設定
-                      borderRadius: BorderRadius.circular(8), // QRコードの角を丸く
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.15), // シャドウの色
-                          blurRadius: 6, // シャドウのぼかし具合
-                          offset: Offset(2, 2), // シャドウの位置
-                        ),
-                      ],
+                  bottom: 16,
+                  right: 16,
+                  child: QrImageView(
+                    data:
+                        'Nickname: ${card.nickname}\nSNS: ${card.snsUsername}\nGithub: ${card.githubUsername}\nNote: ${card.noteUsername}\nEmail: ${card.email}\nOther: ${card.other}',
+                    version: QrVersions.auto,
+                    size: 120, // サイズを少し大きめに調整
+                    errorCorrectionLevel: QrErrorCorrectLevel.H,
+                    eyeStyle: QrEyeStyle(
+                      eyeShape: QrEyeShape.circle,
+                      color: Color(0xFFFB9DA9), // ブランドカラー
                     ),
-                    child: QrImageView(
-                      data:
-                          'Name: ${card.name}\nJob Title: ${card.jobTitle}\nEmail: ${card.email}\nPhone: ${card.phone}',
-                      version: QrVersions.auto,
-                      size: 80, // QRコードのサイズを少し小さく
-                      errorCorrectionLevel: QrErrorCorrectLevel.H,
-                      eyeStyle: QrEyeStyle(
-                        eyeShape: QrEyeShape.circle,
-                        color: Color(0xFFFB9DA9), // 目の色
-                      ),
-                      dataModuleStyle: QrDataModuleStyle(
-                        dataModuleShape: QrDataModuleShape.circle,
-                        color: Color(0xFFFB9DA9), // データモジュールの色
-                      ),
+                    dataModuleStyle: QrDataModuleStyle(
+                      dataModuleShape: QrDataModuleShape.circle,
+                      color: Color(0xFFFB9DA9), // ブランドカラー
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                      top: 100.0, left: 16.0, right: 16.0),
+                // リンク表示
+                Positioned(
+                  bottom: 16,
+                  left: 20, // 左側に寄せた位置
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(card.name,
-                          style: TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.bold)),
-                      Text(card.jobTitle),
-                      Text(card.email),
-                      Text(card.phone),
+                      Text(
+                        card.nickname,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      SizedBox(height: 12), // リンク群と最初のテキスト間隔調整
+                      Row(
+                        children: [
+                          Icon(FontAwesomeIcons.instagram,
+                              size: 18, color: Color(0xFFFB9DA9)), // ブランドカラー
+                          SizedBox(width: 8),
+                          GestureDetector(
+                            onTap: () => _launchURL(
+                                'https://www.instagram.com/${card.snsUsername}'),
+                            child: Text(
+                              '@${card.snsUsername}',
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: Color(0xFFFB9DA9)), // ブランドカラー
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 4), // 各リンク間隔調整
+                      Row(
+                        children: [
+                          Icon(FontAwesomeIcons.github,
+                              size: 18, color: Color(0xFFFB9DA9)), // ブランドカラー
+                          SizedBox(width: 8),
+                          GestureDetector(
+                            onTap: () => _launchURL(
+                                'https://github.com/${card.githubUsername}'),
+                            child: Text(
+                              '@${card.githubUsername}',
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: Color(0xFFFB9DA9)), // ブランドカラー
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(FontAwesomeIcons.noteSticky,
+                              size: 18, color: Color(0xFFFB9DA9)), // ブランドカラー
+                          SizedBox(width: 8),
+                          GestureDetector(
+                            onTap: () => _launchURL(
+                                'https://note.com/${card.noteUsername}'),
+                            child: Text(
+                              '@${card.noteUsername}',
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: Color(0xFFFB9DA9)), // ブランドカラー
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(FontAwesomeIcons.envelope,
+                              size: 18, color: Color(0xFFFB9DA9)), // ブランドカラー
+                          SizedBox(width: 8),
+                          GestureDetector(
+                            onTap: () => _launchURL('mailto:${card.email}'),
+                            child: Text(
+                              card.email,
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: Color(0xFFFB9DA9)), // ブランドカラー
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(FontAwesomeIcons.solidStickyNote,
+                              size: 18, color: Color(0xFFFB9DA9)), // ブランドカラー
+                          SizedBox(width: 8),
+                          GestureDetector(
+                            onTap: () =>
+                                _launchURL('https://www.${card.other}.com'),
+                            child: Text(
+                              card.other,
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: Color(0xFFFB9DA9)), // ブランドカラー
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),

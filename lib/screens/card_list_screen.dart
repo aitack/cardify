@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../models/business_card.dart'; // BusinessCardモデルのインポート
-import 'business_card_preview_screen.dart'; // 名刺プレビュー画面
+import '../models/business_card.dart';
+import 'business_card_preview_screen.dart';
 
 class CardListScreen extends StatefulWidget {
   @override
@@ -8,16 +8,18 @@ class CardListScreen extends StatefulWidget {
 }
 
 class _CardListScreenState extends State<CardListScreen> {
-  List<BusinessCard> _cards = []; // 名刺カードのリスト
+  List<BusinessCard> _cards = [];
 
   void _addCard(BusinessCard card) {
     int newCardNumber = _cards.isEmpty ? 1 : _cards.last.number + 1;
     setState(() {
       _cards.add(BusinessCard(
-        name: card.name,
-        jobTitle: card.jobTitle,
+        nickname: card.nickname,
+        snsUsername: card.snsUsername,
+        githubUsername: card.githubUsername,
+        noteUsername: card.noteUsername,
         email: card.email,
-        phone: card.phone,
+        other: card.other,
         number: newCardNumber,
       ));
     });
@@ -28,17 +30,17 @@ class _CardListScreenState extends State<CardListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Business Card List'),
-        backgroundColor: Color(0xFF9C41A0), // 紫
+        backgroundColor: Color(0xFF9C41A0),
       ),
       body: Container(
-        color: Colors.white, // シンプルな白背景
+        color: Colors.white,
         child: ListView.builder(
           itemCount: _cards.length,
           itemBuilder: (context, index) {
             final card = _cards[index];
             return ListTile(
-              title: Text(card.name),
-              subtitle: Text(card.jobTitle),
+              title: Text(card.nickname),
+              subtitle: Text('${card.snsUsername}\n${card.githubUsername}'),
               trailing: Text('#${card.number}'),
               onTap: () {
                 Navigator.push(
