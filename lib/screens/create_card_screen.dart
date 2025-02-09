@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import '../models/business_card.dart';
 
 class CreateCardScreen extends StatefulWidget {
+  const CreateCardScreen({super.key}); // ここを修正
+
   @override
-  _CreateCardScreenState createState() => _CreateCardScreenState();
+  CreateCardScreenState createState() => CreateCardScreenState();
 }
 
-class _CreateCardScreenState extends State<CreateCardScreen> {
+class CreateCardScreenState extends State<CreateCardScreen> {
   final _formKey = GlobalKey<FormState>();
 
   String _nickname = '';

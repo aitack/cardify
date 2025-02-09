@@ -3,12 +3,14 @@ import '../models/business_card.dart';
 import 'business_card_preview_screen.dart';
 
 class CardListScreen extends StatefulWidget {
+  const CardListScreen({super.key}); // super.key 形式で修正
+
   @override
-  _CardListScreenState createState() => _CardListScreenState();
+  CardListScreenState createState() => CardListScreenState();
 }
 
-class _CardListScreenState extends State<CardListScreen> {
-  List<BusinessCard> _cards = [];
+class CardListScreenState extends State<CardListScreen> {
+  final List<BusinessCard> _cards = [];
 
   void _addCard(BusinessCard card) {
     int newCardNumber = _cards.isEmpty ? 1 : _cards.last.number + 1;

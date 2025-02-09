@@ -7,12 +7,14 @@ import '../models/business_card.dart';
 class BusinessCardPreviewScreen extends StatelessWidget {
   final BusinessCard card;
 
-  BusinessCardPreviewScreen({required this.card});
+  // 修正された部分：key を super.key に渡す
+  const BusinessCardPreviewScreen({super.key, required this.card});
 
   // URLを開くためのヘルパーメソッド
   Future<void> _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
+    final Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
     } else {
       throw 'Could not launch $url';
     }
@@ -33,7 +35,7 @@ class BusinessCardPreviewScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Color.fromRGBO(0, 0, 0, 0.6),
                   blurRadius: 10,
                   offset: Offset(0, 5),
                 ),
@@ -49,7 +51,7 @@ class BusinessCardPreviewScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black.withOpacity(0.6),
+                      color: Color.fromRGBO(0, 0, 0, 0.6),
                     ),
                   ),
                 ),
@@ -162,7 +164,7 @@ class BusinessCardPreviewScreen extends StatelessWidget {
                       SizedBox(height: 4),
                       Row(
                         children: [
-                          Icon(FontAwesomeIcons.solidStickyNote,
+                          Icon(FontAwesomeIcons.noteSticky,
                               size: 18, color: Color(0xFFFB9DA9)), // ブランドカラー
                           SizedBox(width: 8),
                           GestureDetector(
