@@ -57,16 +57,16 @@ class CardListScreenState extends State<CardListScreen> {
         ),
       ),
       floatingActionButton: Container(
-        width: 70,
-        height: 70,
+        width: 140,
+        height: 60,
         decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: LinearGradient(
-            colors: [Color(0xFFFF4C7E), Color(0xFF9C41A0)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
+            // shape: BoxShape.circle,
+            gradient: LinearGradient(
+              colors: [Color(0xFFFF4C7E), Color(0xFF9C41A0)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(50)),
         child: FloatingActionButton(
           onPressed: () {
             Navigator.pushNamed(context, '/create-card').then((newCard) {
@@ -77,7 +77,7 @@ class CardListScreenState extends State<CardListScreen> {
           },
           backgroundColor: Colors.transparent,
           elevation: 0,
-          child: Icon(Icons.add, color: Colors.white, size: 32),
+          child: Icon(Icons.add, color: Colors.white, size: 50),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
