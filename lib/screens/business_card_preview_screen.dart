@@ -26,9 +26,9 @@ class BusinessCardPreviewScreenState extends State<BusinessCardPreviewScreen> {
   void _onVerticalDragEnd(DragEndDetails details) {
     setState(() {
       if (_offsetY > 50) {
-        _offsetY = 100;
-      } else if (_offsetY < -50) {
         _offsetY = 0;
+      } else if (_offsetY < -50) {
+        _offsetY = -150;
       } else {
         _offsetY = 0;
       }
@@ -46,6 +46,12 @@ class BusinessCardPreviewScreenState extends State<BusinessCardPreviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double cardHeight = screenHeight * 0.6;
+    double initialTop = screenHeight * 0.2;
+
+    double qrCodeSize = cardHeight * 0.3; // QRコードのサイズをカード高さの30%に設定
+
     return Scaffold(
       appBar: AppBar(title: Text('Business Card Preview')),
       body: Stack(
@@ -54,158 +60,132 @@ class BusinessCardPreviewScreenState extends State<BusinessCardPreviewScreen> {
           GestureDetector(
             onVerticalDragUpdate: _onVerticalDragUpdate,
             onVerticalDragEnd: _onVerticalDragEnd,
-            child: AnimatedContainer(
-              duration: Duration(milliseconds: 200),
-              curve: Curves.easeOut,
-              transform: Matrix4.translationValues(
-                  MediaQuery.of(context).size.width / 2 -
-                      MediaQuery.of(context).size.width * 0.8 / 2 -
-                      16,
-                  _offsetY,
-                  0),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  height: MediaQuery.of(context).size.height * 0.6,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color.fromRGBO(0, 0, 0, 0.6),
-                        blurRadius: 10,
-                        offset: Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        top: 16,
-                        left: 16,
-                        child: Text(
-                          'Card #${widget.card.number}',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Color.fromRGBO(0, 0, 0, 0.6),
+            child: Container(
+              color: Colors.transparent, // スワイプ検出用の透明な背景
+            ),
+          ),
+          AnimatedPositioned(
+            duration: Duration(milliseconds: 250),
+            top: initialTop + _offsetY,
+            left: MediaQuery.of(context).size.width * 0.1,
+            right: MediaQuery.of(context).size.width * 0.1,
+            child: GestureDetector(
+              onVerticalDragUpdate: _onVerticalDragUpdate,
+              onVerticalDragEnd: _onVerticalDragEnd,
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.8,
+                height: cardHeight,
+                padding: const EdgeInsets.all(16), // 内側の余白を追加
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color.fromRGBO(0, 0, 0, 0.6),
+                      blurRadius: 10,
+                      offset: Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end, // ここで下端に配置
+                  children: [
+                    // QRコードとリンク集を横並びに配置
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // リンク集の部分
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                right: 16), // QRコードとの間隔を調整
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  widget.card.nickname,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                SizedBox(height: 12),
+                                _buildTapableLink(
+                                    FontAwesomeIcons.instagram,
+                                    'https://www.instagram.com/${widget.card.snsUsername}',
+                                    '@${widget.card.snsUsername}'),
+                                _buildTapableLink(
+                                    FontAwesomeIcons.github,
+                                    'https://github.com/${widget.card.githubUsername}',
+                                    '@${widget.card.githubUsername}'),
+                                _buildTapableLink(
+                                    FontAwesomeIcons.solidNoteSticky,
+                                    'https://note.com/${widget.card.noteUsername}',
+                                    '@${widget.card.noteUsername}'),
+                                _buildTapableLink(
+                                    FontAwesomeIcons.envelope,
+                                    'mailto:${widget.card.email}',
+                                    widget.card.email),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      Positioned(
-                        bottom: 16,
-                        right: 16,
-                        child: QrImageView(
-                          data:
-                              'Nickname: ${widget.card.nickname}\nSNS: ${widget.card.snsUsername}\nGithub: ${widget.card.githubUsername}\nNote: ${widget.card.noteUsername}\nEmail: ${widget.card.email}\nOther: ${widget.card.other}',
-                          version: QrVersions.auto,
-                          size: 120,
-                          errorCorrectionLevel: QrErrorCorrectLevel.H,
-                          eyeStyle: QrEyeStyle(
-                            eyeShape: QrEyeShape.circle,
-                            color: Color(0xFFFB9DA9),
-                          ),
-                          dataModuleStyle: QrDataModuleStyle(
-                            dataModuleShape: QrDataModuleShape.circle,
-                            color: Color(0xFFFB9DA9),
+                        // QRコードの部分
+                        SizedBox(
+                          width: qrCodeSize,
+                          height: qrCodeSize,
+                          child: QrImageView(
+                            data: 'Nickname: ${widget.card.nickname}\n'
+                                'SNS: ${widget.card.snsUsername}\n'
+                                'Github: ${widget.card.githubUsername}\n'
+                                'Note: ${widget.card.noteUsername}\n'
+                                'Email: ${widget.card.email}\n'
+                                'Other: ${widget.card.other}',
+                            version: QrVersions.auto,
+                            size: qrCodeSize, // 動的にサイズ設定
+                            errorCorrectionLevel: QrErrorCorrectLevel.H,
+                            eyeStyle: QrEyeStyle(
+                              eyeShape: QrEyeShape.circle,
+                              color: Color(0xFFFB9DA9),
+                            ),
+                            dataModuleStyle: QrDataModuleStyle(
+                              dataModuleShape: QrDataModuleShape.circle,
+                              color: Color(0xFFFB9DA9),
+                            ),
                           ),
                         ),
-                      ),
-                      Positioned(
-                        bottom: 16,
-                        left: 20,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              widget.card.nickname,
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
-                            SizedBox(height: 12),
-                            Row(
-                              children: [
-                                Icon(FontAwesomeIcons.instagram,
-                                    size: 18, color: Color(0xFFFB9DA9)),
-                                SizedBox(width: 8),
-                                GestureDetector(
-                                  onTap: () => _launchURL(
-                                      'https://www.instagram.com/${widget.card.snsUsername}'),
-                                  child: Text(
-                                    '@${widget.card.snsUsername}',
-                                    style: TextStyle(
-                                        fontSize: 14, color: Color(0xFFFB9DA9)),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 4),
-                            Row(
-                              children: [
-                                Icon(FontAwesomeIcons.github,
-                                    size: 18, color: Color(0xFFFB9DA9)),
-                                SizedBox(width: 8),
-                                GestureDetector(
-                                  onTap: () => _launchURL(
-                                      'https://github.com/${widget.card.githubUsername}'),
-                                  child: Text(
-                                    '@${widget.card.githubUsername}',
-                                    style: TextStyle(
-                                        fontSize: 14, color: Color(0xFFFB9DA9)),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 4),
-                            Row(
-                              children: [
-                                Icon(FontAwesomeIcons.solidNoteSticky,
-                                    size: 18, color: Color(0xFFFB9DA9)),
-                                SizedBox(width: 8),
-                                GestureDetector(
-                                  onTap: () => _launchURL(
-                                      'https://note.com/${widget.card.noteUsername}'),
-                                  child: Text(
-                                    '@${widget.card.noteUsername}',
-                                    style: TextStyle(
-                                        fontSize: 14, color: Color(0xFFFB9DA9)),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 4),
-                            Row(
-                              children: [
-                                Icon(FontAwesomeIcons.envelope,
-                                    size: 18,
-                                    color: Color(0xFFFB9DA9)), // ブランドカラー
-                                SizedBox(width: 8),
-                                GestureDetector(
-                                  onTap: () =>
-                                      _launchURL('mailto:${widget.card.email}'),
-                                  child: Text(
-                                    widget.card.email,
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        color: Color(0xFFFB9DA9)), // ブランドカラー
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTapableLink(IconData icon, String url, String text) {
+    return GestureDetector(
+      onTap: () => _launchURL(url),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Row(
+            children: [
+              Icon(icon, size: 18, color: Color(0xFFFB9DA9)),
+              SizedBox(width: 8),
+              Text(
+                text,
+                style: TextStyle(fontSize: 14, color: Color(0xFFFB9DA9)),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
