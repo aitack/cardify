@@ -40,18 +40,64 @@ class CardListScreenState extends State<CardListScreen> {
           itemCount: _cards.length,
           itemBuilder: (context, index) {
             final card = _cards[index];
-            return ListTile(
-              title: Text(card.nickname),
-              subtitle: Text('${card.snsUsername}\n${card.githubUsername}'),
-              trailing: Text('#${card.number}'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => BusinessCardPreviewScreen(card: card),
+
+            return Padding(
+              padding: const EdgeInsets.all(16.0), // カード間に余白を追加
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          BusinessCardPreviewScreen(card: card),
+                    ),
+                  );
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white, // カードの背景色
+                    borderRadius: BorderRadius.circular(16), // 角丸
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color.fromRGBO(0, 0, 0, 0.6), // 薄い影
+                        blurRadius: 10, // 影のぼかし
+                        offset: Offset(0, 4), // 影の位置
+                      ),
+                    ],
                   ),
-                );
-              },
+                  child: Stack(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0), // 内側の余白
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              card.nickname,
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Positioned(
+                        top: 16,
+                        right: 16,
+                        child: Text(
+                          '#${card.number}',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.grey,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             );
           },
         ),
@@ -60,7 +106,6 @@ class CardListScreenState extends State<CardListScreen> {
         width: 140,
         height: 60,
         decoration: BoxDecoration(
-            // shape: BoxShape.circle,
             gradient: LinearGradient(
               colors: [Color(0xFFFF4C7E), Color(0xFF9C41A0)],
               begin: Alignment.topLeft,
